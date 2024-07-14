@@ -9,7 +9,12 @@
 
                  ; Dependency
                  [com.stuartsierra/component "1.1.0"]
-                 [ring/ring-jetty-adapter "1.8.2"]] 
+                 [metosin/compojure-api "1.1.14"]
+                 [prismatic/schema "1.4.1"]
+                 [ring/ring-jetty-adapter "1.8.2"]
+                 
+                 ; O11y
+                 [org.clojure/tools.logging "1.2.4"]] 
   :plugins [[lein-ring "0.12.5"]]
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
