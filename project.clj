@@ -1,12 +1,17 @@
 (defproject clojure-caju-process "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
+  :description "Caju code challenge"
   :url "http://example.com/FIXME"
+  :main clojure-caju-process.core/-main
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [compojure "1.6.1"]
-                 [ring/ring-defaults "0.3.2"]]
+                 [ring/ring-defaults "0.3.2"]
+
+                 ; Dependency
+                 [com.stuartsierra/component "1.1.0"]
+                 [ring/ring-jetty-adapter "1.8.2"]] 
   :plugins [[lein-ring "0.12.5"]]
-  :ring {:handler clojure-caju-process.handler/app}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
-                        [ring/ring-mock "0.3.2"]]}})
+                        [ring/ring-mock "0.3.2"]]
+         :plugins      [[lein-cloverage "1.2.2"]]}})

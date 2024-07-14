@@ -1,6 +1,6 @@
 # clojure-caju-process
 
-FIXME
+Resolução do desafio de programação da Caju ([enunciado aqui](./code-challenge.md))
 
 ## Prerequisites
 
@@ -17,3 +17,13 @@ To start a web server for the application, run:
 ## License
 
 Copyright © 2024 FIXME
+
+
+---
+
+Pensanso sobre a resposta do L4
+
+1. Lock no banco
+2. Lock externo
+3. Usar um id para transação que tenha timestamp
+4. Solução async com partition key no Kafka
