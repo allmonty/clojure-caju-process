@@ -9,7 +9,9 @@
 
                  ; Dependency
                  [com.stuartsierra/component "1.1.0"]
-                 [metosin/compojure-api "1.1.14"]
+                 [metosin/reitit "0.7.1"]
+                 [metosin/muuntaja "0.6.10"]
+                 [metosin/malli "0.16.2"]
                  [prismatic/schema "1.4.1"]
                  [ring/ring-jetty-adapter "1.8.2"]
                  

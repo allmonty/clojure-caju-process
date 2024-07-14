@@ -6,7 +6,7 @@
   
   UseCase
   (execute [_this params]
-    (str "Creating transaction" params)))
+    (str "Creating transaction " params)))
 
 (defn new
   []

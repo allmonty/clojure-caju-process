@@ -1,44 +1,75 @@
 (ns clojure-caju-process.presentation.web.http
   (:require [clojure-caju-process.use-case.use-case :as UseCase]
-            [clojure-caju-process.presentation.web.exception-middleware :as ex-middleware]
             [com.stuartsierra.component :refer [Lifecycle]]
-            [compojure.api.sweet :refer [DELETE GET PATCH POST api context resource routes]]
-            [compojure.api.exception :as ex]
+            [reitit.ring :as ring]
+            [reitit.openapi :as openapi]
+            [reitit.dev.pretty :as pretty]
+            [reitit.swagger-ui :as swagger-ui]
+            [reitit.ring.middleware.muuntaja :as muuntaja]
+            [reitit.ring.middleware.exception :as exception]
+            [reitit.ring.middleware.multipart :as multipart] 
+            [reitit.ring.middleware.parameters :as parameters]
             [ring.adapter.jetty :as jetty]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [schema.core :as s]))
+            [muuntaja.core :as m]
+            [reitit.coercion.spec]
+            [reitit.ring.coercion :as coercion]))
+
+(def openapi
+  [["/openapi.json"
+    {:get {:no-doc true
+           :openapi {:info {:title "Caju Code Challenge"
+                            :description "openapi3 docs with reitit-ring"
+                            :version "0.0.1"}}
+           :handler (openapi/create-openapi-handler)}}]])
 
 (defn transaction-context [{:keys [create]}]
-  (routes
-   (context "/transaction" []
-     :tags ["Transaction"]
-     (resource
-      {:get {:parameters {:query-params {:name String}}
-             :responses {200 {:schema s/Any}
-                         404 {}
-                         500 {:schema s/Any}}
-             :handler (fn [params] (UseCase/execute create params))}}))))
+  [["/transactions/:id"
+    {:get {:summary "retrieve all transactions"
+           :parameters {:path {:id int?}}
+           :responses {200 {:body {:data string?}}}
+           :handler (fn [{params :parameters}]
+                      {:status 200
+                       :body {:data (UseCase/execute create params)}})}}]])
 
-(defn web-routes [{:keys [transaction_usecases]}]
-  (routes
-   (transaction-context transaction_usecases)))
+(def router-configs
+  {;; :reitit.middleware/transform dev/print-request-diffs ;; pretty diffs
+   ;; :validate spec/validate ;; enable spec validation for route data
+   ;; :reitit.spec/wrap spell/closed ;; strict top-level validation
+   :exception pretty/exception
+   :data {:coercion reitit.coercion.spec/coercion
+          :muuntaja m/instance
+          :middleware [openapi/openapi-feature
+                       parameters/parameters-middleware
+                       muuntaja/format-middleware
+                       exception/exception-middleware
+                       coercion/coerce-response-middleware
+                       coercion/coerce-request-middleware
+                       coercion/coerce-exceptions-middleware
+                       multipart/multipart-middleware]}})
+
+(defn web-router [{:keys [transaction_usecases]}]
+  (ring/ring-handler
+   (ring/router
+    (concat
+      openapi
+      (transaction-context transaction_usecases))
+    router-configs)
+   (ring/routes
+    (swagger-ui/create-swagger-ui-handler
+     {:path "/"
+      :config {:validatorUrl nil
+               :urls [{:name "openapi", :url "openapi.json"}]
+               :urls.primaryName "openapi"
+               :operationsSorter "alpha"}})
+    (ring/create-default-handler))))
 
 (defrecord HTTPWebHandler
            [transaction_usecase_create]
   Lifecycle
   (start [_this]
-    (->
-     (api
-      {:exceptions {:handlers {::ex/default ex-middleware/wrap-exception-handler}}
-       :swagger {:ui   "/docs"
-                 :spec "/swagger.json"
-                 :data {:info     {:title       "Caju Coding Challenge"
-                                   :description "Project to process transactions"}
-                        :consumes ["application/json"]
-                        :produces ["application/json"]}}}
-      (web-routes {:transaction_usecases {:create transaction_usecase_create}}))
-     (wrap-defaults site-defaults)
-     (jetty/run-jetty {:port 3000, :join? false}))))
+    (-> {:transaction_usecases {:create transaction_usecase_create}}
+        (web-router)
+        (jetty/run-jetty {:port 3000, :join? false}))))
     
 (defn new
   []
