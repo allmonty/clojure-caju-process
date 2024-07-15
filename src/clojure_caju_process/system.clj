@@ -1,5 +1,5 @@
 (ns clojure-caju-process.system
-  (:require [clojure-caju-process.presentation.web.http :as web_handler]
+  (:require [clojure-caju-process.infrastructure.web.http :as web_handler]
             [clojure-caju-process.use-case.transaction.create :as transaction_create]
             [com.stuartsierra.component :as component]))
 

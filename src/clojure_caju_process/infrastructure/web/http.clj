@@ -1,4 +1,4 @@
-(ns clojure-caju-process.presentation.web.http
+(ns clojure-caju-process.infrastructure.web.http
   (:require [clojure-caju-process.use-case.use-case :as UseCase]
             [com.stuartsierra.component :refer [Lifecycle]]
             [reitit.ring :as ring]
