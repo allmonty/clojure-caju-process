@@ -4,21 +4,30 @@
   :main clojure-caju-process.core/-main
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.10.0"]
-                 [compojure "1.6.1"]
-                 [ring/ring-defaults "0.3.2"]
 
-                 ; Dependency
+                 ; Components arch / dependency injection
                  [com.stuartsierra/component "1.1.0"]
+
+                 ; Schemas
+                 [prismatic/schema "1.4.1"]
+
+                 ; Web server and router
                  [metosin/reitit "0.7.1"]
                  [metosin/muuntaja "0.6.10"]
-                 [metosin/malli "0.16.2"]
-                 [prismatic/schema "1.4.1"]
+                 [ring/ring-defaults "0.3.2"]
                  [ring/ring-jetty-adapter "1.8.2"]
-                 
+
+                ; Database
+                 [com.github.seancorfield/next.jdbc "1.3.939"]
+                 [migratus "1.5.6"]
+                 [org.postgresql/postgresql "42.6.0"]
+
                  ; O11y
                  [org.clojure/tools.logging "1.2.4"]] 
   :plugins [[lein-ring "0.12.5"]]
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.2"]]
-         :plugins      [[lein-cloverage "1.2.2"]]}})
+         :plugins      [[lein-cloverage "1.2.2"]]
+         :test-selectors {:default (complement :integration)
+                          :integration :integration}}})
