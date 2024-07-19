@@ -4,7 +4,7 @@
 
 (s/defschema Merchant
   "Schema for a Merchant"
-  {:id s/Str
+  {:id s/Uuid
    :name s/Str
    :merchant-category MerchantCategory
    s/Any s/Any})

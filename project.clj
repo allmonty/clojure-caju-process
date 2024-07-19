@@ -3,7 +3,7 @@
   :url "http://example.com/FIXME"
   :main clojure-caju-process.core/-main
   :min-lein-version "2.0.0"
-  :dependencies [[org.clojure/clojure "1.10.0"]
+  :dependencies [[org.clojure/clojure "1.11.1"]
 
                  ; Components arch / dependency injection
                  [com.stuartsierra/component "1.1.0"]
@@ -21,6 +21,7 @@
                  [com.github.seancorfield/next.jdbc "1.3.939"]
                  [migratus "1.5.6"]
                  [org.postgresql/postgresql "42.6.0"]
+                 [com.github.seancorfield/honeysql "2.6.1147"]
 
                  ; O11y
                  [org.clojure/tools.logging "1.2.4"]] 
