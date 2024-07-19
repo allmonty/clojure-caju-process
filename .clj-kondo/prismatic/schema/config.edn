@@ -1,1 +1,3 @@
-{:lint-as {schema.test/deftest clojure.test/deftest}}
+{:lint-as {schema.test/deftest clojure.test/deftest
+           schema.core/defprotocol clojure.core/defprotocol
+           schema.core/defrecord clojure.core/defrecord}}
