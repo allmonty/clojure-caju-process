@@ -3,5 +3,5 @@
             [schema.core :as s]))
 
 (s/defprotocol AccountsRepository
-  (get-by-id :- (s/maybe accounts/Account) [this id :- s/Str]))
- 
+  (get-by-id :- (s/maybe accounts/Account) [this id :- s/Str])
+  (save :- accounts/Account [this account :- accounts/Account]))

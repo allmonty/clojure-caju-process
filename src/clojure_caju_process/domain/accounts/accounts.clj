@@ -1,6 +1,6 @@
 (ns clojure-caju-process.domain.accounts.accounts
   (:require [clojure-caju-process.domain.merchant-categories.merchant-categories :as mc]
-            [clojure-caju-process.domain.transactions.transaction :as tr]
+            [clojure-caju-process.domain.transactions.transactions :as tr]
             [schema.core :as s]))
 
 (s/defschema Account

@@ -3,10 +3,11 @@
 
 (s/defschema Input
   "Input for Authorize Transaction Use Case"
-  {:account       s/Str
+  {:id            s/Str
+   :account       s/Str
    :merchant-name s/Str
    :mcc           s/Str
-   :total-amount  s/Num
+   :amount        s/Num
    s/Any s/Any})
 
 ;; (s/defschema Output
