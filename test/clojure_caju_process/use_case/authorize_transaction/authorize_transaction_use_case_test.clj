@@ -14,7 +14,7 @@
           mocked-merchants-repo (mr-mock/mock-repository :get-by-name-fn (fn [_] mocked-merchant-info)) 
           mocked-account-info {:id "123" :balance {:food 100 :meal 100 :cash 100}}
           mocked-accounts-repo (acr-mock/mock-repository :get-by-id-fn (fn [_] mocked-account-info)
-                                                         :save-fn identity)
+                                                         :create-fn identity)
           mocked-transactions-repo (tr-mock/mock-repository :create-fn identity)
           authorize-transaction-use-case (authorize-transaction-use-case/new)
           system (component/start (component/system-map

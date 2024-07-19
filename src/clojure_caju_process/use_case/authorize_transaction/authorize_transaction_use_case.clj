@@ -27,7 +27,7 @@
         
         (do
           (tra-repo/create transactions-repository new-transaction)
-          (acc-repo/save accounts-repository debit-result))))))
+          (acc-repo/create accounts-repository debit-result))))))
 
 (defn new
   []

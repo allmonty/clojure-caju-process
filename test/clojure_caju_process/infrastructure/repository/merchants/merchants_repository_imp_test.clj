@@ -1,4 +1,4 @@
-(ns clojure-caju-process.infrastructure.repository.merchants.merchants-respository-imp-test
+(ns clojure-caju-process.infrastructure.repository.merchants.merchants-repository-imp-test
   (:require [clojure-caju-process.domain.merchants.merchants-repository :as mer-repo]
             [clojure-caju-process.infrastructure.database.driver :as database-driver]
             [clojure-caju-process.infrastructure.repository.merchants.merchants-repository-imp :as mri]

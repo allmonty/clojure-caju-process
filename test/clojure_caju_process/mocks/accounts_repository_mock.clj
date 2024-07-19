@@ -6,11 +6,11 @@
   acc-repo/AccountsRepository
   (get-by-id [_ id]
    ((:get-by-id mocked-functions) id))
-  (save [_ account]
-   ((:save mocked-functions) account)))
+  (create [_ account]
+   ((:create mocked-functions) account)))
 
 (defn mock-repository
   "Returns a mock account repository"
-  [& {:keys [get-by-id-fn save-fn]}]
+  [& {:keys [get-by-id-fn create-fn]}]
   (->MockAccountsRepository {:get-by-id get-by-id-fn
-                             :save save-fn}))
+                             :create create-fn}))
