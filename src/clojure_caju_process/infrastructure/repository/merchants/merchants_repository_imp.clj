@@ -22,7 +22,7 @@
   [database-driver]
   
   repository/MerchantsRepository
-  (create [_this merchant]
+  (create! [_this merchant]
    (->> merchant
         (->entity)
         (database/insert! database-driver table)

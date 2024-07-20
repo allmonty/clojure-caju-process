@@ -28,7 +28,7 @@
     (testing "Happy path:"
       (testing "When creating new merchant, returns the merchant created"
         (is (= new-merchant
-               (mer-repo/create (:merchants-repository @test-system) new-merchant))))
+               (mer-repo/create! (:merchants-repository @test-system) new-merchant))))
     
       (testing "When getting existing merchant by name, returns the merchant"
         (is (= new-merchant
@@ -40,8 +40,8 @@
     
       (testing "When trying to create merchant with same id, throws exception"
         (is (thrown-with-msg? PSQLException #"ERROR: duplicate key value violates unique constraint \"merchants_pkey\"\n  Detail: Key \(id\)="
-                              (mer-repo/create (:merchants-repository @test-system) (assoc new-merchant :name "other name")))))
+                              (mer-repo/create! (:merchants-repository @test-system) (assoc new-merchant :name "other name")))))
       
       (testing "When trying to create merchant with same name, throws exception"
         (is (thrown-with-msg? PSQLException #"ERROR: duplicate key value violates unique constraint \"merchants_name_key\"\n  Detail: Key \(name\)="
-                              (mer-repo/create (:merchants-repository @test-system) (assoc new-merchant :id (UUID/randomUUID)))))))))
+                              (mer-repo/create! (:merchants-repository @test-system) (assoc new-merchant :id (UUID/randomUUID)))))))))

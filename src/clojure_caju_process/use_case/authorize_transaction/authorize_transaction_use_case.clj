@@ -26,8 +26,8 @@
         (println debit-result)
         
         (do
-          (tra-repo/create transactions-repository new-transaction)
-          (acc-repo/create accounts-repository debit-result))))))
+          (tra-repo/create! transactions-repository new-transaction)
+          (acc-repo/create! accounts-repository debit-result))))))
 
 (defn new
   []

@@ -24,7 +24,7 @@
   [database-driver]
   
   repository/AccountsRepository
-  (create [_this account]
+  (create! [_this account]
    (->> account
         (->entity)
         (database/insert! database-driver table)

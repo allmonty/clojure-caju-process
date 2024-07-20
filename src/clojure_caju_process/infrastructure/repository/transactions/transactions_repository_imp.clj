@@ -26,7 +26,7 @@
   [database-driver]
   
   repository/TransactionsRepository
-  (create [_this transaction]
+  (create! [_this transaction]
    (->> transaction
         (->entity)
         (database/insert! database-driver table)

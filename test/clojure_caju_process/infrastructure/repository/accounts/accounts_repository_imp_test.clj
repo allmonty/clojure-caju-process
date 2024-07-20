@@ -27,7 +27,7 @@
     (testing "Happy path:"
       (testing "When creating new account, returns the account created"
         (is (= new-account
-               (acc-repo/create (:accounts-repository @test-system) new-account))))
+               (acc-repo/create! (:accounts-repository @test-system) new-account))))
 
       (testing "When getting existing account by id, returns the account"
         (is (= new-account
@@ -39,5 +39,5 @@
 
       (testing "When trying to create account with same id, throws exception"
         (is (thrown-with-msg? PSQLException #"ERROR: duplicate key value violates unique constraint \"accounts_pkey\"\n  Detail: Key \(id\)="
-                              (acc-repo/create (:accounts-repository @test-system) new-account)))))))
+                              (acc-repo/create! (:accounts-repository @test-system) new-account)))))))
                      
