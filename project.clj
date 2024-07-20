@@ -17,7 +17,11 @@
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-jetty-adapter "1.8.2"]
 
-                ; Database
+                 ; Web client
+                 [clj-http "3.13.0"]
+                 [cheshire "5.13.0"]
+
+                 ; Database
                  [com.github.seancorfield/next.jdbc "1.3.939"]
                  [migratus "1.5.6"]
                  [org.postgresql/postgresql "42.6.0"]

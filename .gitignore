@@ -11,3 +11,5 @@ pom.xml.asc
 .cpcache/
 .lsp/
 .clj-kondo/.cache/
+.clj-kondo/potemkin/
+.calva/
