@@ -4,4 +4,5 @@
 
 (s/defprotocol AccountsRepository
   (create! :- accounts/Account [this account :- accounts/Account])
-  (get-by-id :- (s/maybe accounts/Account) [this id :- s/Str]))
+  (get-by-id :- (s/maybe accounts/Account) [this id :- s/Str])
+  (update-balance! :- (s/maybe accounts/Account) [this account :- accounts/Account]))

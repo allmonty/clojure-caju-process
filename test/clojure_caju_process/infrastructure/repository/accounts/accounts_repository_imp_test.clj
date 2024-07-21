@@ -22,7 +22,7 @@
 
 (use-fixtures :once with-test-db)
 
-(s/deftest ^:integration test-accounts-repository
+(s/deftest ^:integration test-create-get-accounts-repository
   (let [new-account {:id "123" :balance {:food 100 :meal 200 :cash 300}}]
     (testing "Happy path:"
       (testing "When creating new account, returns the account created"
@@ -40,4 +40,16 @@
       (testing "When trying to create account with same id, throws exception"
         (is (thrown-with-msg? PSQLException #"ERROR: duplicate key value violates unique constraint \"accounts_pkey\"\n  Detail: Key \(id\)="
                               (acc-repo/create! (:accounts-repository @test-system) new-account)))))))
-                     
+
+(s/deftest ^:integration test-update-accounts-repository
+  (let [account {:id "124" :balance {:food 100 :meal 200 :cash 300}}
+        _ (acc-repo/create! (:accounts-repository @test-system) account)
+        new_balance (assoc account :balance {:food 50 :meal 150 :cash 250})]
+    (testing "Happy path:"
+      (testing "When updating account balance, changes balance and returns the account"
+        (is (= new_balance
+               (acc-repo/update-balance! (:accounts-repository @test-system) new_balance)))))
+
+    (testing "Edge cases:"
+      (testing "When trying to update balance of non-existing account, returns nil"
+        (is (nil? (acc-repo/update-balance! (:accounts-repository @test-system) (assoc account :id "000"))))))))

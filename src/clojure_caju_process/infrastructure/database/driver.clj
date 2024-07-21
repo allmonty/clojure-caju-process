@@ -35,7 +35,7 @@
     (sql/insert! (:database this) table data))
 
   (update! [this table id data]
-    (sql/update! (:database this) table data {:id id}))
+    (sql/update! (:database this) table data {:id id} {:return-keys true}))
 
   (delete! [this table id]
     (sql/delete! (:database this) table {:id id}))

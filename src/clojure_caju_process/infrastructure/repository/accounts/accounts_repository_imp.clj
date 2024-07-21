@@ -33,7 +33,14 @@
   (get-by-id [_this id]
     (some-> (database/get-by database-driver table :id id)
             first
-            ->account)))
+            ->account))
+  
+  (update-balance! [_this account]
+    (let [{:keys [balance_food balance_meal balance_cash]} (->entity account)]
+      (some->> (database/update! database-driver table (:id account) {:balance_food balance_food
+                                                                      :balance_meal balance_meal
+                                                                      :balance_cash balance_cash})
+               (->account)))))
 
 (defn new
   []
