@@ -11,13 +11,16 @@
             [clojure-caju-process.use-case.merchants.create-merchant-usecase :as create-merchant-usecase]
             [clojure-caju-process.use-case.merchants.get-merchant-usecase :as get-merchant-usecase]
 
+            [clojure-caju-process.use-case.debits.create-debit-usecase :as create-debit-usecase]
+
             [com.stuartsierra.component :as component]))
 
 (defn- system
   []
   (component/system-map
    :http_presenter (component/using (web-handler/new) [:create-account-usecase :get-account-usecase
-                                                       :create-merchant-usecase :get-merchant-usecase])
+                                                       :create-merchant-usecase :get-merchant-usecase
+                                                       :create-debit-usecase])
 
    :database-driver (component/using (database-driver/new) [])
    :accounts-repository (component/using (acc-ri/new) [:database-driver])
@@ -28,7 +31,9 @@
    :get-account-usecase (component/using (get-account-usecase/new) [:accounts-repository])
    
    :create-merchant-usecase (component/using (create-merchant-usecase/new) [:merchants-repository])
-   :get-merchant-usecase (component/using (get-merchant-usecase/new) [:merchants-repository])))
+   :get-merchant-usecase (component/using (get-merchant-usecase/new) [:merchants-repository])
+   
+   :create-debit-usecase (component/using (create-debit-usecase/new) [:accounts-repository :merchants-repository :transactions-repository])))
 
 (defn start
   []

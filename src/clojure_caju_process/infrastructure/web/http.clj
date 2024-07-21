@@ -4,6 +4,7 @@
             [clojure-caju-process.use-case.accounts.get-account-usecase-schema :as get-acc-s]
             [clojure-caju-process.use-case.merchants.create-merchant-usecase-schema :as create-mer-s]
             [clojure-caju-process.use-case.merchants.get-merchant-usecase-schema :as get-mer-s]
+            [clojure-caju-process.use-case.debits.create-debit-usecase-schema :as create-deb-s]
             [com.stuartsierra.component :refer [Lifecycle]]
             [muuntaja.core :as m]
             [reitit.dev.pretty :as pretty]
@@ -16,7 +17,8 @@
             [reitit.ring.middleware.multipart :as multipart]
             [reitit.ring.middleware.parameters :as parameters]
             [reitit.swagger-ui :as swagger-ui]
-            [ring.adapter.jetty :as jetty]))
+            [ring.adapter.jetty :as jetty]
+            [schema.core :as s]))
 
 (def openapi
   [["/openapi.json"
@@ -64,14 +66,20 @@
                           (nil? resp) {:status 404}
                           :else {:status 200 :body resp})))}}]])
 
-;; (defn transaction-context [{:keys [create]}]
-;;   [["/transactions/:id"
-;;     {:get {:summary "retrieve all transactions"
-;;            :parameters {:path {:id int?}}
-;;            :responses {200 {:body {:data string?}}}
-;;            :handler (fn [{params :parameters}]
-;;                       {:status 200
-;;                        :body {:data (UseCase/execute create params)}})}}]])
+(defn debits-context [{:keys [create]}]
+  [["/debits"
+    {:post {:summary "Create debit"
+            :parameters {:body create-deb-s/Input}
+            :responses {200 {:body s/Any}}
+            :handler (fn [{{body :body} :parameters}]
+                       (try
+                         {:status 200
+                          :body (case (UseCase/execute create body)
+                                  :debit-successful {:code "00"}
+                                  :insufficient-funds {:code "51"})}
+                         (catch Exception _
+                           {:status 200
+                            :body {:code "07"}})))}}]])
 
 (def router-configs
   {;; :reitit.middleware/transform dev/print-request-diffs ;; pretty diffs
@@ -90,13 +98,14 @@
                        coercion/coerce-exceptions-middleware
                        multipart/multipart-middleware]}})
 
-(defn web-router [{:keys [accounts-usecases merchants-usecases]}]
+(defn web-router [{:keys [accounts-usecases merchants-usecases debits-usecases]}]
   (ring/ring-handler
    (ring/router
     (concat
       openapi
       (accounts-context accounts-usecases)
-      (merchants-context merchants-usecases))
+      (merchants-context merchants-usecases)
+      (debits-context debits-usecases))
     router-configs)
    (ring/routes
     (swagger-ui/create-swagger-ui-handler
@@ -109,13 +118,15 @@
 
 (defrecord HTTPWebHandler
            [create-account-usecase get-account-usecase
-            create-merchant-usecase get-merchant-usecase]
+            create-merchant-usecase get-merchant-usecase
+            create-debit-usecase]
   Lifecycle
   (start [_this]
     (-> {:accounts-usecases {:create create-account-usecase
                              :get get-account-usecase}
          :merchants-usecases {:create create-merchant-usecase
-                              :get get-merchant-usecase}}
+                              :get get-merchant-usecase}
+         :debits-usecases {:create create-debit-usecase}}
         (web-router)
         (jetty/run-jetty {:port 3000, :join? false}))))
     
