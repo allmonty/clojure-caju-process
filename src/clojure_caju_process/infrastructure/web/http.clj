@@ -1,6 +1,7 @@
 (ns clojure-caju-process.infrastructure.web.http
   (:require [clojure-caju-process.use-case.use-case :as UseCase]
             [clojure-caju-process.use-case.accounts.create-account-usecase-schema :as create-acc-s]
+            [clojure-caju-process.use-case.accounts.get-account-usecase-schema :as get-acc-s]
             [com.stuartsierra.component :refer [Lifecycle]]
             [muuntaja.core :as m]
             [reitit.dev.pretty :as pretty]
@@ -13,7 +14,8 @@
             [reitit.ring.middleware.multipart :as multipart]
             [reitit.ring.middleware.parameters :as parameters]
             [reitit.swagger-ui :as swagger-ui]
-            [ring.adapter.jetty :as jetty]))
+            [ring.adapter.jetty :as jetty]
+            [schema.core :as s]))
 
 (def openapi
   [["/openapi.json"
@@ -23,14 +25,24 @@
                             :version "0.0.1"}}
            :handler (openapi/create-openapi-handler)}}]])
 
-(defn accounts-context [{:keys [create]}]
+(defn accounts-context [{:keys [create get]}]
   [["/accounts"
     {:post {:summary "Create account"
             :parameters {:body create-acc-s/Input}
             :responses {200 {:body create-acc-s/Output}}
             :handler (fn [{{body :body} :parameters}]
                        {:status 200
-                        :body (UseCase/execute create body)})}}]])
+                        :body (UseCase/execute create body)})}}]
+   ["/accounts/:id"
+    {:get {:summary "Retrieve one account"
+           :parameters {:path {:id get-acc-s/Input}}
+           :responses {200 {:body get-acc-s/Output}
+                       404 {}}
+           :handler (fn [{{id :id} :path-params}]
+                      (let [resp (UseCase/execute get id)]
+                        (cond
+                          (nil? resp) {:status 404}
+                          :else {:status 200 :body resp})))}}]])
 
 ;; (defn transaction-context [{:keys [create]}]
 ;;   [["/transactions/:id"
@@ -51,6 +63,7 @@
           :middleware [openapi/openapi-feature
                        parameters/parameters-middleware
                        muuntaja/format-middleware
+                       exception/default-handlers
                        exception/exception-middleware
                        coercion/coerce-response-middleware
                        coercion/coerce-request-middleware
@@ -74,10 +87,11 @@
     (ring/create-default-handler))))
 
 (defrecord HTTPWebHandler
-           [create-account-usecase]
+           [create-account-usecase get-account-usecase]
   Lifecycle
   (start [_this]
-    (-> {:accounts-usecases {:create create-account-usecase}}
+    (-> {:accounts-usecases {:create create-account-usecase
+                             :get get-account-usecase}}
         (web-router)
         (jetty/run-jetty {:port 3000, :join? false}))))
     
