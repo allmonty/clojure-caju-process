@@ -1,22 +1,20 @@
 (ns clojure-caju-process.integration.web.accounts-integration-test
   (:require [clj-http.client :as http]
-            [clojure-caju-process.system :as system]
+            [clojure-caju-process.integration.test-helper :as th]
             [clojure.test :refer :all]
             [com.stuartsierra.component :as component]
             [next.jdbc :as jdbc]
             [cheshire.core :refer [parse-string]]
             [schema.test :as s]))
 
-(def test-system (atom nil))
-
-(defn with-test-db
+(defn with-system
   [f]
-  (reset! test-system (system/start))
+  (th/start-system)
   (f)
-  (jdbc/execute! (-> @test-system :database-driver :database) ["DELETE FROM accounts;"])
-  (component/stop @test-system))
+  (jdbc/execute! (-> @th/system :database-driver :database) ["DELETE FROM accounts;"])
+  (component/stop @th/system))
 
-(use-fixtures :once with-test-db)
+(use-fixtures :once with-system)
 
 (s/deftest ^:integration test-integration-accounts-api
   (testing "Happy path:"
