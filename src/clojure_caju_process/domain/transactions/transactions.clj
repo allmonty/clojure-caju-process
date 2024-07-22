@@ -4,10 +4,14 @@
 
 (def TransactionAmount s/Num)
 
+(def TransactionType (s/enum :debit))
+
 (s/defschema Transaction
   {:id s/Str
    :account s/Str
    :amount TransactionAmount
    :merchant-category mc/MerchantCategory
    :merchant-name s/Str
+   :type TransactionType
+   (s/optional-key :created-at) s/Str
    s/Any s/Any})

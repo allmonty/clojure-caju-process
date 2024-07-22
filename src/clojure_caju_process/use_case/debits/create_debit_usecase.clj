@@ -15,7 +15,8 @@
    :account account-id
    :merchant-name merchant-name
    :merchant-category category
-   :amount amount})
+   :amount amount
+   :type :debit})
 
 (s/defrecord CreateDebit
              [accounts-repository merchants-repository transactions-repository]

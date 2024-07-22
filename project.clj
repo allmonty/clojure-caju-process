@@ -28,11 +28,12 @@
                  [com.github.seancorfield/honeysql "2.6.1147"]
 
                  ; O11y
-                 [org.clojure/tools.logging "1.2.4"]] 
+                 [org.clojure/tools.logging "1.2.4"]]
   :plugins [[lein-ring "0.12.5"]]
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
-                        [ring/ring-mock "0.3.2"]]
+                        [ring/ring-mock "0.3.2"]
+                        [nubank/matcher-combinators "3.9.1"]]
          :plugins      [[lein-cloverage "1.2.2"]]
          :test-selectors {:default (constantly true)
                           :unit (complement :integration)
