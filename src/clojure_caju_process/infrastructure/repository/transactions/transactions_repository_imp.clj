@@ -6,11 +6,19 @@
 
 (def table :transactions)
 
+(s/defn ^:private cents->double :- s/Num
+  [cents :- s/Int]
+  (double (/ cents 100)))
+
+(s/defn ^:private double->cents :- s/Int
+  [double :- s/Num]
+  (int (* double 100)))
+
 (s/defn ^:private ->entity :- s/Any
   [{:keys [id account amount merchant-category merchant-name type]} :- transactions/Transaction]
   {:id id
    :account account
-   :amount amount
+   :amount (double->cents amount)
    :merchant_category (name merchant-category)
    :merchant_name merchant-name
    :type (name type)})
@@ -19,7 +27,7 @@
   [#:transactions{:keys [id account amount merchant_category merchant_name type created_at]}]
   {:id id
    :account account
-   :amount amount
+   :amount (cents->double amount)
    :merchant-category (keyword merchant_category)
    :merchant-name merchant_name
    :type (keyword type)

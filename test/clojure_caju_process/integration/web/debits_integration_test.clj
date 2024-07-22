@@ -48,11 +48,11 @@
 (s/deftest ^:integration test-integration-debits-api
   (testing "Simple debit authorizer with fallback (L1 and L2. using only mcc info):"
     (let [account-id "111"
-          account {:id account-id :balance {:food 100 :meal 200 :cash 300}}
-          expected-account-1 (assoc-in account [:balance :food] 50)
-          expected-account-2 (assoc-in expected-account-1 [:balance :meal] 150)
-          expected-account-3 (assoc-in expected-account-2 [:balance :cash] 250)
-          expected-account-4 (assoc-in expected-account-2 [:balance :cash] 150)
+          account {:id account-id :balance {:food 100.0 :meal 200.0 :cash 300.0}}
+          expected-account-1 (assoc-in account [:balance :food] 50.0)
+          expected-account-2 (assoc-in expected-account-1 [:balance :meal] 150.0)
+          expected-account-3 (assoc-in expected-account-2 [:balance :cash] 250.0)
+          expected-account-4 (assoc-in expected-account-2 [:balance :cash] 150.0)
           _ (create-account account)]
 
       (testing "Debit from food balance"
@@ -113,16 +113,16 @@
 
   (testing "Debit authorizer if merchant info:"
     (let [account-id "112"
-          account {:id account-id :balance {:food 100 :meal 200 :cash 300}}
+          account {:id account-id :balance {:food 100.0 :meal 200.0 :cash 300.0}}
           merchant {:id (str (UUID/randomUUID)) :name "comida restaurante" :merchant-category "meal"}
-          expected-account-1 (assoc-in account [:balance :meal] 150)
-          expected-account-2 (assoc-in expected-account-1 [:balance :meal] 100)
-          expected-account-3 (assoc-in expected-account-2 [:balance :cash] 100)
+          expected-account-1 (assoc-in account [:balance :meal] 150.0)
+          expected-account-2 (assoc-in expected-account-1 [:balance :meal] 100.0)
+          expected-account-3 (assoc-in expected-account-2 [:balance :cash] 100.0)
           _ (create-merchant merchant)
           _ (create-account account)]
 
       (testing "Debit with mcc of food but merchant info overwrites to meal"
-        (let [request {:id "trans:7", :account-id account-id, :merchant-name (:name merchant), :mcc "5412", :amount 50}
+        (let [request {:id "trans:7", :account-id account-id, :merchant-name (:name merchant), :mcc "5412", :amount 50.0}
               response (make-debit request)
               account-response (get-account account-id)]
           (is (= expected-account-1 (-> account-response :body (parse-string true))))
@@ -130,7 +130,7 @@
           (is (= {:code "00"} (-> response :body (parse-string true))))))
 
       (testing "Debit with unknown mcc but merchant info overwrites to meal"
-        (let [request {:id "trans:8", :account-id account-id, :merchant-name (:name merchant), :mcc "000", :amount 50}
+        (let [request {:id "trans:8", :account-id account-id, :merchant-name (:name merchant), :mcc "000", :amount 50.0}
               response (make-debit request)
               account-response (get-account account-id)]
           (is (= expected-account-2 (-> account-response :body (parse-string true))))
@@ -138,7 +138,7 @@
           (is (= {:code "00"} (-> response :body (parse-string true))))))
 
       (testing "Debit with not enough funds in meal, merchant info overwrites to meal, but debit from cash"
-        (let [request {:id "trans:9", :account-id account-id, :merchant-name (:name merchant), :mcc "5412", :amount 200}
+        (let [request {:id "trans:9", :account-id account-id, :merchant-name (:name merchant), :mcc "5412", :amount 200.0}
               response (make-debit request)
               account-response (get-account account-id)]
           (is (= expected-account-3 (-> account-response :body (parse-string true))))

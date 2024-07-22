@@ -24,7 +24,7 @@
 (use-fixtures :once with-test-db)
 
 (s/deftest ^:integration test-create-get-accounts-repository
-  (let [account {:id "accrepotest:123" :balance {:food 100 :meal 200 :cash 300}}]
+  (let [account {:id "accrepotest:123" :balance {:food 100.0 :meal 200.0 :cash 300.0}}]
     (testing "Happy path:"
       (testing "When creating new account, returns the account created"
         (is (= account
@@ -43,9 +43,9 @@
                               (acc-repo/create! (:accounts-repository @test-system) account)))))))
 
 (s/deftest ^:integration test-update-accounts-repository
-  (let [account {:id "accrepotest:124" :balance {:food 100 :meal 200 :cash 300}}
+  (let [account {:id "accrepotest:124" :balance {:food 100.0 :meal 200.0 :cash 300.0}}
         _ (acc-repo/create! (:accounts-repository @test-system) account)
-        new_balance (assoc account :balance {:food 50 :meal 150 :cash 250})]
+        new_balance (assoc account :balance {:food 50.0 :meal 150.0 :cash 250.0})]
     (testing "Happy path:"
       (testing "When updating account balance, changes balance and returns the account"
         (is (= new_balance
@@ -56,7 +56,7 @@
         (is (nil? (acc-repo/update-balance! (:accounts-repository @test-system) {} (assoc account :id "000"))))))))
 
 (s/deftest ^:integration test-consistent-update-accounts-repository
-  (let [account {:id "accrepotest:125" :balance {:food 100 :meal 200 :cash 300}}
+  (let [account {:id "accrepotest:125" :balance {:food 100.0 :meal 200.0 :cash 300.0}}
         account_repository (:accounts-repository @test-system)
         _ (acc-repo/create! account_repository account)
         acc_new_balance (update-in account [:balance :food] - 50)

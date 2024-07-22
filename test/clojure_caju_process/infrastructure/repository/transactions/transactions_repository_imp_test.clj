@@ -29,11 +29,14 @@
 
 (s/deftest ^:integration test-transactions-repository
   (let [new-account {:id "trarepotest:456" :balance {:food 100 :meal 100 :cash 100}}
-        new-transaction {:id "trarepotest:123" :account (:id new-account) :amount 789 :merchant-category :food :merchant-name "mer name" :type :debit}]
+        new-transaction {:id "trarepotest:123" :account (:id new-account) :amount 789.0 :merchant-category :food :merchant-name "mer name" :type :debit}
+        _ (acc-repo/create! (:accounts-repository @test-system) new-account)]
     (testing "Happy path:"
       (testing "When creating new transaction for existing account, returns transaction"
-        (is (= new-account (acc-repo/create! (:accounts-repository @test-system) new-account)))
         (is (match? new-transaction (tra-repo/create! (:transactions-repository @test-system) {} new-transaction))))
+      (testing "Transactions can receive float"
+        (let [transaction-float (assoc new-transaction :id "trarepotest:457" :amount 789.98)]
+          (is (match? transaction-float (tra-repo/create! (:transactions-repository @test-system) {} transaction-float)))))
 
       (testing "When getting existing transaction by id, returns the transaction"
         (is (match? new-transaction

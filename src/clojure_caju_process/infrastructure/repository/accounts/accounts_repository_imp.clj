@@ -6,19 +6,27 @@
 
 (def table :accounts)
 
+(s/defn ^:private cents->double :- s/Num
+  [cents :- s/Int]
+  (double (/ cents 100)))
+
+(s/defn ^:private double->cents :- s/Int
+  [double :- s/Num]
+  (int (* double 100)))
+
 (s/defn ^:private ->entity :- s/Any
   [{id :id {:keys [food meal cash]} :balance} :- accounts/Account]
   {:id id
-   :balance_food food
-   :balance_meal meal
-   :balance_cash cash})
+   :balance_food (double->cents food)
+   :balance_meal (double->cents meal)
+   :balance_cash (double->cents cash)})
 
 (s/defn ^:private ->account :- accounts/Account
   [#:accounts{:keys [id balance_food balance_meal balance_cash]}]
   {:id id
-   :balance {:food balance_food
-             :meal balance_meal
-             :cash balance_cash}})
+   :balance {:food (cents->double balance_food)
+             :meal (cents->double balance_meal)
+             :cash (cents->double balance_cash)}})
 
 (s/defrecord AccountsRepositoryImp
   [database-driver]

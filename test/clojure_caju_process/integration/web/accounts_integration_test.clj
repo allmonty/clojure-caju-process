@@ -19,7 +19,7 @@
 (s/deftest ^:integration test-integration-accounts-api
   (testing "Happy path:"
     (testing "POST /accounts creates a new account"
-      (let [request-body {:id "123" :balance {:food 100 :meal 200 :cash 300}}
+      (let [request-body {:id "123" :balance {:food 100.0 :meal 200.0 :cash 300.0}}
             response (http/post "http://localhost:3000/accounts"
                                 {:accept :json
                                  :content-type :json
@@ -28,7 +28,7 @@
         (is (= request-body (-> response :body (parse-string true))))))
     
     (testing "GET /accounts/:id returns the account"
-      (let [request-body {:id "123" :balance {:food 100 :meal 200 :cash 300}}
+      (let [request-body {:id "123" :balance {:food 100.0 :meal 200.0 :cash 300.0}}
             response (http/get "http://localhost:3000/accounts/123" {:accept :json})]
         (is (= 200 (:status response)))
         (is (= request-body (-> response :body (parse-string true)))))))
