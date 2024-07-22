@@ -26,14 +26,14 @@
   [database-driver]
   
   repository/TransactionsRepository
-  (create! [_this transaction]
+  (create! [_this {conn :conn} transaction]
    (->> transaction
         (->entity)
-        (database/insert! database-driver table)
+        (database/insert! database-driver {:conn conn} table)
         (->transaction)))
   
   (get-by-id [_this id]
-    (some-> (database/get-by database-driver table :id id)
+    (some-> (database/get-by database-driver {} table :id id)
             first
             ->transaction)))
 

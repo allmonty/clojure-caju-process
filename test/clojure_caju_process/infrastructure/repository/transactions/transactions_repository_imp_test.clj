@@ -27,16 +27,16 @@
 (use-fixtures :once with-test-db)
 
 (s/deftest ^:integration test-transactions-repository
-  (let [new-account {:id "456" :balance {:food 100 :meal 100 :cash 100}}
-        new-transaction {:id "123" :account "456" :amount 789 :merchant-category :food :merchant-name "mer name"}]
+  (let [new-account {:id "trarepotest:456" :balance {:food 100 :meal 100 :cash 100}}
+        new-transaction {:id "trarepotest:123" :account (:id new-account) :amount 789 :merchant-category :food :merchant-name "mer name"}]
     (testing "Happy path:"
       (testing "When creating new transaction for existing account, returns transaction"
-        (is (= (acc-repo/create! (:accounts-repository @test-system) new-account) new-account))
-        (is (= (tra-repo/create! (:transactions-repository @test-system) new-transaction) new-transaction)))
+        (is (= new-account (acc-repo/create! (:accounts-repository @test-system) new-account)))
+        (is (= new-transaction (tra-repo/create! (:transactions-repository @test-system) {} new-transaction))))
 
       (testing "When getting existing transaction by id, returns the transaction"
         (is (= new-transaction
-               (tra-repo/get-by-id (:transactions-repository @test-system) "123") new-transaction))))
+               (tra-repo/get-by-id (:transactions-repository @test-system) (:id new-transaction))))))
 
     (testing "Edge cases:"
       (testing "When no transaction is found by id, return empty"
@@ -44,10 +44,10 @@
 
       (testing "When trying to create transaction with same id, throws exception"
         (is (thrown-with-msg? PSQLException #"ERROR: duplicate key value violates unique constraint \"transactions_pkey\"\n  Detail: Key \(id\)="
-                              (tra-repo/create! (:transactions-repository @test-system) new-transaction))))
+                              (tra-repo/create! (:transactions-repository @test-system) {} new-transaction))))
       
       (testing "When trying to create transaction for unexistent account, throws exception"
         (is (thrown-with-msg? PSQLException #"ERROR: insert or update on table \"transactions\" violates foreign key constraint \"transactions_account_fkey"
-                              (tra-repo/create! (:transactions-repository @test-system) (assoc new-transaction
-                                                                                              :id "456"
-                                                                                              :account "000"))))))))
+                              (tra-repo/create! (:transactions-repository @test-system) {} (assoc new-transaction
+                                                                                                  :id "trarepotest:000"
+                                                                                                  :account "000"))))))))

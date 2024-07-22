@@ -6,8 +6,8 @@
   tra-repo/TransactionsRepository
   (get-by-id [_ id]
     ((:get-by-id mocked-functions) id))
-  (create! [_ account]
-    ((:create mocked-functions) account)))
+  (create! [_ opts account]
+    ((:create mocked-functions) opts account)))
 
 (defn mock-repository
   "Returns a mock account repository"

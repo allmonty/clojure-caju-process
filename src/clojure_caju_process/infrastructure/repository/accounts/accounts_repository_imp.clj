@@ -24,23 +24,32 @@
   [database-driver]
   
   repository/AccountsRepository
-  (create! [_this account]
+  (create! [_ account]
    (->> account
         (->entity)
-        (database/insert! database-driver table)
+        (database/insert! database-driver {} table)
         (->account)))
   
-  (get-by-id [_this id]
-    (some-> (database/get-by database-driver table :id id)
+  (get-by-id [_ id]
+    (some-> (database/get-by database-driver {} table :id id)
             first
             ->account))
   
-  (update-balance! [_this account]
+  (update-balance! [_ {conn :conn} account]
     (let [{:keys [balance_food balance_meal balance_cash]} (->entity account)]
-      (some->> (database/update! database-driver table (:id account) {:balance_food balance_food
-                                                                      :balance_meal balance_meal
-                                                                      :balance_cash balance_cash})
-               (->account)))))
+      (some->> (database/update! database-driver
+                                 {:conn conn} table (:id account)
+                                 {:balance_food balance_food
+                                  :balance_meal balance_meal
+                                  :balance_cash balance_cash})
+               (->account))))
+  
+  (consistent-update! [_ id function]
+    (database/with-lock-update! database-driver table id
+      (fn [account-entity tx]
+        (some-> account-entity
+                ->account
+                (function tx))))))
 
 (defn new
   []

@@ -1,20 +1,21 @@
 (ns clojure-caju-process.infrastructure.web.http
-  (:require [clojure-caju-process.use-case.use-case :as UseCase]
-            [clojure-caju-process.use-case.accounts.create-account-usecase-schema :as create-acc-s]
+  (:require [clojure-caju-process.use-case.accounts.create-account-usecase-schema :as create-acc-s]
             [clojure-caju-process.use-case.accounts.get-account-usecase-schema :as get-acc-s]
+            [clojure-caju-process.use-case.debits.create-debit-usecase-schema :as create-deb-s]
             [clojure-caju-process.use-case.merchants.create-merchant-usecase-schema :as create-mer-s]
             [clojure-caju-process.use-case.merchants.get-merchant-usecase-schema :as get-mer-s]
-            [clojure-caju-process.use-case.debits.create-debit-usecase-schema :as create-deb-s]
+            [clojure-caju-process.use-case.use-case :as UseCase]
+            [clojure.tools.logging :as logging]
             [com.stuartsierra.component :refer [Lifecycle]]
             [muuntaja.core :as m]
-            [reitit.dev.pretty :as pretty]
             [reitit.coercion.schema]
+            [reitit.dev.pretty :as pretty]
             [reitit.openapi :as openapi]
             [reitit.ring :as ring]
             [reitit.ring.coercion :as coercion]
-            [reitit.ring.middleware.muuntaja :as muuntaja] 
             [reitit.ring.middleware.exception :as exception]
             [reitit.ring.middleware.multipart :as multipart]
+            [reitit.ring.middleware.muuntaja :as muuntaja]
             [reitit.ring.middleware.parameters :as parameters]
             [reitit.swagger-ui :as swagger-ui]
             [ring.adapter.jetty :as jetty]
@@ -77,7 +78,8 @@
                           :body (case (UseCase/execute create body)
                                   :debit-successful {:code "00"}
                                   :insufficient-funds {:code "51"})}
-                         (catch Exception _
+                         (catch Exception e
+                           (logging/error "Error creating debit" :error_message (.getMessage e))
                            {:status 200
                             :body {:code "07"}})))}}]])
 

@@ -62,7 +62,7 @@
           (is (= expected-account-1 (-> account-response :body (parse-string true))))
           (is (= 200 (:status response)))
           (is (= {:code "00"} (-> response :body (parse-string true))))))
-      
+
       (testing "Debit from meal balance"
         (let [request {:id "trans:2", :account-id account-id, :merchant-name "comida bar", :mcc "5812", :amount 50}
               response (make-debit request)
@@ -70,7 +70,7 @@
           (is (= expected-account-2 (-> account-response :body (parse-string true))))
           (is (= 200 (:status response)))
           (is (= {:code "00"} (-> response :body (parse-string true))))))
-      
+
       (testing "Debit from cash balance when unknown mcc"
         (let [request {:id "trans:3", :account-id account-id, :merchant-name "comida bar", :mcc "0000", :amount 50}
               response (make-debit request)
@@ -78,7 +78,7 @@
           (is (= expected-account-3 (-> account-response :body (parse-string true))))
           (is (= 200 (:status response)))
           (is (= {:code "00"} (-> response :body (parse-string true))))))
-      
+
       (testing "Debit from food balance without enough funds, will debit from cash"
         (let [request {:id "trans:4", :account-id account-id, :merchant-name "comida bar", :mcc "5412", :amount 100}
               response (make-debit request)
@@ -86,7 +86,7 @@
           (is (= expected-account-4 (-> account-response :body (parse-string true))))
           (is (= 200 (:status response)))
           (is (= {:code "00"} (-> response :body (parse-string true))))))
-      
+
       (testing "Not enough funds in meal or cash, will return rejected and not debit"
         (let [request {:id "trans:5", :account-id account-id, :merchant-name "comida bar", :mcc "5812", :amount 999}
               response (make-debit request)
@@ -94,15 +94,23 @@
           (is (= expected-account-4 (-> account-response :body (parse-string true))))
           (is (= 200 (:status response)))
           (is (= {:code "51"} (-> response :body (parse-string true))))))
-      
-      (testing "Return code 07 in case of any error"
+
+      (testing "Return code 07 in case of transaction for unknown account"
         (let [request {:id "trans:6", :account-id "000", :merchant-name "comida bar", :mcc "5812", :amount 999}
               response (make-debit request)
               account-response (get-account account-id)]
           (is (= expected-account-4 (-> account-response :body (parse-string true))))
           (is (= 200 (:status response)))
+          (is (= {:code "07"} (-> response :body (parse-string true))))))
+      
+      (testing "Return code 07 in case of repeated transaction"
+        (let [request {:id "trans:5", :account-id "000", :merchant-name "comida bar", :mcc "5812", :amount 999}
+              response (make-debit request)
+              account-response (get-account account-id)]
+          (is (= expected-account-4 (-> account-response :body (parse-string true))))
+          (is (= 200 (:status response)))
           (is (= {:code "07"} (-> response :body (parse-string true))))))))
-  
+
   (testing "Debit authorizer if merchant info:"
     (let [account-id "112"
           account {:id account-id :balance {:food 100 :meal 200 :cash 300}}
@@ -112,7 +120,7 @@
           expected-account-3 (assoc-in expected-account-2 [:balance :cash] 100)
           _ (create-merchant merchant)
           _ (create-account account)]
-      
+
       (testing "Debit with mcc of food but merchant info overwrites to meal"
         (let [request {:id "trans:7", :account-id account-id, :merchant-name (:name merchant), :mcc "5412", :amount 50}
               response (make-debit request)
@@ -120,7 +128,7 @@
           (is (= expected-account-1 (-> account-response :body (parse-string true))))
           (is (= 200 (:status response)))
           (is (= {:code "00"} (-> response :body (parse-string true))))))
-      
+
       (testing "Debit with unknown mcc but merchant info overwrites to meal"
         (let [request {:id "trans:8", :account-id account-id, :merchant-name (:name merchant), :mcc "000", :amount 50}
               response (make-debit request)
@@ -128,7 +136,7 @@
           (is (= expected-account-2 (-> account-response :body (parse-string true))))
           (is (= 200 (:status response)))
           (is (= {:code "00"} (-> response :body (parse-string true))))))
-      
+
       (testing "Debit with not enough funds in meal, merchant info overwrites to meal, but debit from cash"
         (let [request {:id "trans:9", :account-id account-id, :merchant-name (:name merchant), :mcc "5412", :amount 200}
               response (make-debit request)

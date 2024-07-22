@@ -23,19 +23,21 @@
   (execute
     [_this params]
     (let [{:keys [id account-id merchant-name mcc amount]} (s/validate schema/Input params)
-          account-info  (acc-repo/get-by-id accounts-repository account-id)
           merchant-info (mer-repo/get-by-name merchants-repository merchant-name)
-          category      (mc/get-category mcc (:merchant-category merchant-info))
-          debit-result  (acc/debit account-info category amount)
-          new-transaction (->transaction id account-id merchant-name category amount)]
-      (case debit-result
-        {:error :insufficient-funds}
-        :insufficient-funds
+          category      (mc/get-category mcc (:merchant-category merchant-info))]
+      (acc-repo/consistent-update!
+       accounts-repository account-id
+       (fn [account conn]
+         (let [debit-result    (acc/debit account category amount)
+               new-transaction (->transaction id account-id merchant-name category amount)]
+           (case debit-result
+             {:error :insufficient-funds}
+             :insufficient-funds
 
-        (do
-          (tra-repo/create! transactions-repository new-transaction)
-          (acc-repo/update-balance! accounts-repository debit-result)
-          :debit-successful)))))
+             (do
+               (acc-repo/update-balance! accounts-repository {:conn conn} debit-result)
+               (tra-repo/create! transactions-repository {:conn conn} new-transaction)
+               :debit-successful))))))))
 
 (defn new
   []

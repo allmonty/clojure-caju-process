@@ -17,28 +17,39 @@
    :db db-config})
 
 (defprotocol Database
-  (execute! [this query])
-  (get-by [this table column data])
-  (insert! [this table data])
-  (update! [this table id data])
-  (delete! [this table id]))
+  (execute!          [this opts query])
+  (get-by            [this opts table column data])
+  (insert!           [this opts table data])
+  (update!           [this opts table id data])
+  (delete!           [this opts table id])
+  (with-lock-update! [this table entity function]))
 
 (defrecord DatabaseDriver []
   Database
-  (execute! [this query]
-    (jdbc/execute! (:database this) query {:return-keys true}))
+  (execute! [this {:keys [conn]} query]
+    (let [conn (or conn (:database this))]
+      (jdbc/execute! conn query {:return-keys true})))
 
-  (get-by [this table column data]
-    (sql/find-by-keys (:database this) table {column data}))
+  (get-by [this {:keys [conn]} table column data]
+    (let [conn (or conn (:database this))]
+      (sql/find-by-keys conn table {column data})))
 
-  (insert! [this table data]
-    (sql/insert! (:database this) table data))
+  (insert! [this {:keys [conn]} table data]
+    (let [conn (or conn (:database this))]
+      (sql/insert! conn table data)))
 
-  (update! [this table id data]
-    (sql/update! (:database this) table data {:id id} {:return-keys true}))
+  (update! [this {:keys [conn]} table id data]
+    (let [conn (or conn (:database this))]
+      (sql/update! conn table data {:id id} {:return-keys true})))
 
-  (delete! [this table id]
-    (sql/delete! (:database this) table {:id id}))
+  (delete! [this {:keys [conn]} table id]
+    (let [conn (or conn (:database this))]
+     (sql/delete! conn table {:id id})))
+
+  (with-lock-update! [this table id function]
+    (jdbc/with-transaction [tx (:database this)]
+      (-> (jdbc/execute-one! tx [(str "SELECT * FROM " (name table) " WHERE id = ? FOR UPDATE;") id] {:return-keys true})
+          (function tx))))
 
   Lifecycle
   (start [this]

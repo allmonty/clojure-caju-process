@@ -3,5 +3,5 @@
             [schema.core :as s]))
 
 (s/defprotocol TransactionsRepository
-  (create! :- transactions/Transaction [this transaction :- transactions/Transaction])
+  (create! :- transactions/Transaction [this opts transaction :- transactions/Transaction])
   (get-by-id :- (s/maybe transactions/Transaction) [this id :- s/Str]))

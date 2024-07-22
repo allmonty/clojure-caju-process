@@ -25,11 +25,11 @@
   (create! [_this merchant]
    (->> merchant
         (->entity)
-        (database/insert! database-driver table)
+        (database/insert! database-driver {} table)
         (->merchant)))
   
   (get-by-name [_this name]
-    (some-> (database/get-by database-driver table :name name)
+    (some-> (database/get-by database-driver {} table :name name)
             first
             ->merchant)))
 
