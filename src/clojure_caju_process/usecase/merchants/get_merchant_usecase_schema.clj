@@ -1,4 +1,4 @@
-(ns clojure-caju-process.use-case.merchants.get-merchant-usecase-schema
+(ns clojure-caju-process.usecase.merchants.get-merchant-usecase-schema
   (:require [clojure-caju-process.domain.merchants.merchants :as merchants]
             [schema.core :as s]))
 

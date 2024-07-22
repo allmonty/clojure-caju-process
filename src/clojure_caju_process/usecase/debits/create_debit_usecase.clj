@@ -1,12 +1,12 @@
-(ns clojure-caju-process.use-case.debits.create-debit-usecase
+(ns clojure-caju-process.usecase.debits.create-debit-usecase
   (:require [clojure-caju-process.domain.accounts.accounts :as acc]
             [clojure-caju-process.domain.accounts.accounts-repository :as acc-repo]
             [clojure-caju-process.domain.merchants.merchants-repository :as mer-repo]
             [clojure-caju-process.domain.transactions.transactions-repository :as tra-repo]
             [clojure-caju-process.domain.merchant-categories.merchant-categories :as mc]
             [clojure-caju-process.domain.transactions.transactions :as transactions]
-            [clojure-caju-process.use-case.debits.create-debit-usecase-schema :as schema]
-            [clojure-caju-process.use-case.use-case :refer [UseCase]]
+            [clojure-caju-process.usecase.debits.create-debit-usecase-schema :as schema]
+            [clojure-caju-process.usecase.usecase :refer [UseCase]]
             [schema.core :as s]))
 
 (s/defn ^:pprivate ->transaction :- transactions/Transaction

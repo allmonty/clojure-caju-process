@@ -1,6 +1,6 @@
-(ns clojure-caju-process.use-case.accounts.create-account-usecase
-  (:require [clojure-caju-process.use-case.use-case :refer [UseCase]]
-            [clojure-caju-process.use-case.accounts.create-account-usecase-schema :as schema]
+(ns clojure-caju-process.usecase.accounts.create-account-usecase
+  (:require [clojure-caju-process.usecase.usecase :refer [UseCase]]
+            [clojure-caju-process.usecase.accounts.create-account-usecase-schema :as schema]
             [clojure-caju-process.domain.accounts.accounts-repository :as acc-repo]
             ;; [clojure.tools.logging :as logging]
             [schema.core :as s]))

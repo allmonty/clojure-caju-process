@@ -1,4 +1,4 @@
-(ns clojure-caju-process.use-case.debits.create-debit-usecase-schema
+(ns clojure-caju-process.usecase.debits.create-debit-usecase-schema
   (:require [schema.core :as s]))
 
 (s/defschema Input

@@ -5,13 +5,13 @@
             [clojure-caju-process.infrastructure.repository.transactions.transactions-repository-imp :as tra-ri]
             [clojure-caju-process.infrastructure.web.http :as web-handler]
 
-            [clojure-caju-process.use-case.accounts.create-account-usecase :as create-account-usecase]
-            [clojure-caju-process.use-case.accounts.get-account-usecase :as get-account-usecase]
+            [clojure-caju-process.usecase.accounts.create-account-usecase :as create-account-usecase]
+            [clojure-caju-process.usecase.accounts.get-account-usecase :as get-account-usecase]
 
-            [clojure-caju-process.use-case.merchants.create-merchant-usecase :as create-merchant-usecase]
-            [clojure-caju-process.use-case.merchants.get-merchant-usecase :as get-merchant-usecase]
+            [clojure-caju-process.usecase.merchants.create-merchant-usecase :as create-merchant-usecase]
+            [clojure-caju-process.usecase.merchants.get-merchant-usecase :as get-merchant-usecase]
 
-            [clojure-caju-process.use-case.debits.create-debit-usecase :as create-debit-usecase]
+            [clojure-caju-process.usecase.debits.create-debit-usecase :as create-debit-usecase]
 
             [com.stuartsierra.component :as component]))
 

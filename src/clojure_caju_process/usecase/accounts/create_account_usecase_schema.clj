@@ -1,4 +1,4 @@
-(ns clojure-caju-process.use-case.accounts.create-account-usecase-schema
+(ns clojure-caju-process.usecase.accounts.create-account-usecase-schema
   (:require [clojure-caju-process.domain.accounts.accounts :as accounts]
             [schema.core :as s]))
 

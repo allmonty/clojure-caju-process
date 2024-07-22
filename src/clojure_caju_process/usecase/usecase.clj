@@ -1,4 +1,4 @@
-(ns clojure-caju-process.use-case.use-case)
+(ns clojure-caju-process.usecase.usecase)
 
 (defprotocol UseCase
   "Protocol for use cases"
