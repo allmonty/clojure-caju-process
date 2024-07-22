@@ -32,6 +32,7 @@
 (defn accounts-context [{:keys [create get]}]
   [["/accounts"
     {:post {:summary "Create account"
+            :tags ["Accounts"]
             :parameters {:body create-acc-s/Input}
             :responses {200 {:body create-acc-s/Output}}
             :handler (fn [{{body :body} :parameters}]
@@ -39,6 +40,7 @@
                         :body (UseCase/execute create body)})}}]
    ["/accounts/:id"
     {:get {:summary "Retrieve one account"
+           :tags ["Accounts"]
            :parameters {:path {:id get-acc-s/Input}}
            :responses {200 {:body get-acc-s/Output}
                        404 {}}
@@ -51,6 +53,7 @@
 (defn merchants-context [{:keys [create get]}]
   [["/merchants"
     {:post {:summary "Create merchant"
+            :tags ["Merchants"]
             :parameters {:body create-mer-s/Input}
             :responses {200 {:body create-mer-s/Output}}
             :handler (fn [{{body :body} :parameters}]
@@ -58,6 +61,7 @@
                         :body (UseCase/execute create body)})}}]
    ["/merchants/:name"
     {:get {:summary "Retrieve one merchant"
+           :tags ["Merchants"]
            :parameters {:path {:name get-mer-s/Input}}
            :responses {200 {:body get-mer-s/Output}
                        404 {}}
@@ -70,8 +74,9 @@
 (defn debits-context [{:keys [create]}]
   [["/debits"
     {:post {:summary "Create debit"
+            :tags ["Debits"]
             :parameters {:body create-deb-s/Input}
-            :responses {200 {:body s/Any}}
+            :responses {200 {:body {:code (s/enum "00" "51" "07")}}}
             :handler (fn [{{body :body} :parameters}]
                        (try
                          {:status 200
