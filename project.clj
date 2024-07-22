@@ -34,5 +34,6 @@
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.2"]]
          :plugins      [[lein-cloverage "1.2.2"]]
-         :test-selectors {:default (complement :integration)
+         :test-selectors {:default (constantly true)
+                          :unit (complement :integration)
                           :integration :integration}}})
